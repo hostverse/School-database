@@ -1,0 +1,21 @@
+// pages/api/students/index.js
+import db from '../../../lib/db';
+
+export default async function handler(req, res) {
+  if (req.method === 'GET') {
+    try {
+      const [rows] = await db.query('SELECT * FROM students');
+      res.status(200).json(rows);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch students' });
+    }
+  } else if (req.method === 'POST') {
+    const { name, year_level, special_needs } = req.body;
+    try {
+      await db.query('INSERT INTO students (name, year_level, special_needs) VALUES (?, ?, ?)', [name, year_level, special_needs]);
+      res.status(201).json({ message: 'Student added' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to add student' });
+    }
+  }
+}
